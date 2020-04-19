@@ -1,0 +1,32 @@
+{
+  "name": "@hyurl/schemaly",
+  "version": "1.0.0",
+  "description": "A tool to match and ensure structures of objects.",
+  "main": "dist/index.js",
+  "types": "src/index.ts",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hyurl/schemaly.git"
+  },
+  "keywords": [
+    "schema",
+    "pattern-match"
+  ],
+  "author": "Ayon Lee <i@hyurl.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hyurl/schemaly/issues"
+  },
+  "homepage": "https://github.com/hyurl/schemaly#readme",
+  "dependencies": {
+    "@hyurl/utils": "^0.1.32"
+  },
+  "devDependencies": {
+    "@types/node": "^13.11.1",
+    "dotry": "^1.0.3",
+    "mocha": "^7.1.1"
+  }
+}
