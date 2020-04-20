@@ -2,10 +2,10 @@
 const assert = require("assert");
 const { ensure } = require("../..");
 
-describe("ensure: RegExp", () => {
-    const pattern = "/[0-9a-f]{40}/i";
-    const regex = /[0-9a-f]{40}/i;
+const pattern = "/[0-9a-f]{40}/i";
+const regex = /[0-9a-f]{40}/i;
 
+describe("ensure: RegExp", () => {
     it("should ensure default value", () => {
         assert.deepStrictEqual(ensure({}, { foo: RegExp }), { foo: null });
         assert.deepStrictEqual(ensure({}, { foo: regex }), { foo: regex });

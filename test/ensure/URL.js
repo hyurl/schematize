@@ -6,14 +6,14 @@ const url = "https://github.com/hyurl/utils";
 const urlObj = new URL(url);
 
 describe("ensure: URL", () => {
-    it("should return as-is for existing properties of Date type", () => {
+    it("should return as-is for existing properties of URL type", () => {
         assert.deepStrictEqual(
             ensure({ foo: urlObj }, { foo: URL }),
             { foo: urlObj }
         );
     });
 
-    it("should return as-is for existing sub-properties of Date type", () => {
+    it("should return as-is for existing sub-properties of URL type", () => {
         assert.deepStrictEqual(
             ensure(
                 { foo: { bar: urlObj } },
