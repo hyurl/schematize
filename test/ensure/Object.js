@@ -31,13 +31,10 @@ describe("ensure: Object", () => {
     it("should cast existing properties of non-object type to objects", () => {
         assert.deepStrictEqual(
             ensure(
-                { foo: '{"hello":"world"}', bar: '["hello","world"]' },
-                { foo: Object, bar: Object }
+                { foo: '{"hello":"world"}' },
+                { foo: Object }
             ),
-            {
-                foo: { hello: "world" },
-                bar: ["hello", "world"]
-            }
+            { foo: { hello: "world" } }
         );
     });
 
@@ -63,10 +60,10 @@ describe("ensure: Object", () => {
     it("should cast all elements in an array to objects by array schema", () => {
         assert.deepStrictEqual(
             ensure(
-                { foo: ['{"hello":"world"}', '["hello","world"]'] },
+                { foo: ['{"hello":"world"}'] },
                 { foo: [Object] }
             ),
-            { foo: [{ hello: "world" }, ["hello", "world"]] }
+            { foo: [{ hello: "world" }] }
         );
     });
 
@@ -116,10 +113,10 @@ describe("ensure: Object", () => {
     it("should support top level array schemas", () => {
         assert.deepStrictEqual(
             ensure(
-                [{ foo: '{"hello":"world"}' }, { foo: '["hello","world"]' }],
+                [{ foo: '{"hello":"world"}' }],
                 [{ foo: Object }]
             ),
-            [{ foo: { hello: "world" } }, { foo: ["hello", "world"] }]
+            [{ foo: { hello: "world" } }]
         );
     });
 
