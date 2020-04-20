@@ -259,10 +259,10 @@ function getHandles(
                 return value;
             } else if (typeof value === "object") {
                 return { ...value };
-            } else if (type === "string" &&
-                value[0] === "{" &&
-                value[value.length - 1] === "}"
-            ) {
+            } else if (type === "string" && (
+                (value[0] === "{" && value[value.length - 1] === "}") ||
+                (value[0] === "[" && value[value.length - 1] === "]")
+            )) {
                 return JSON.parse(value);
             }
         }, () => <any>{}, "Object"];
