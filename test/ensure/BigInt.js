@@ -76,40 +76,4 @@ describe("ensure: BigInt", () => {
             { foo: { bar: [] } }
         );
     });
-
-    it("should support top level array schemas", () => {
-        assert.deepStrictEqual(
-            ensure([{ foo: 123 }, { foo: "456" }], [{ foo: BigInt }]),
-            [{ foo: 123n }, { foo: 456n }]
-        );
-    });
-
-    it("should throw proper error when casting failed on properties", () => {
-        let [err1] = doTry(() => ensure({ foo: "abc" }, { foo: BigInt }));
-        let [err2] = doTry(() => ensure({ foo: { bar: "abc" } }, { foo: { bar: BigInt } }));
-        let [err3] = doTry(() => ensure({ foo: ["abc"] }, { foo: [BigInt] }));
-        let [err4] = doTry(() => ensure([{ foo: "abc" }], [{ foo: BigInt }]));
-        let [err5] = doTry(() => ensure([{ foo: { bar: "abc" } }], [{ foo: { bar: BigInt } }]));
-
-        assert.deepStrictEqual(
-            String(err1),
-            "TypeError: The value of 'foo' is not a bigint and cannot be casted into one"
-        );
-        assert.deepStrictEqual(
-            String(err2),
-            "TypeError: The value of 'foo.bar' is not a bigint and cannot be casted into one"
-        );
-        assert.deepStrictEqual(
-            String(err3),
-            "TypeError: The value of 'foo.0' is not a bigint and cannot be casted into one"
-        );
-        assert.deepStrictEqual(
-            String(err4),
-            "TypeError: The value of '0.foo' is not a bigint and cannot be casted into one"
-        );
-        assert.deepStrictEqual(
-            String(err5),
-            "TypeError: The value of '0.foo.bar' is not a bigint and cannot be casted into one"
-        );
-    });
 });

@@ -45,11 +45,6 @@ describe("ensure: Object", () => {
         );
     });
 
-    it("should ensure default value", () => {
-        assert.deepStrictEqual(ensure({}, { foo: Object }), { foo: {} });
-        assert.deepStrictEqual(ensure({}, { foo: {} }), { foo: {} });
-    });
-
     it("should cast existing values in sub-node to objects", () => {
         assert.deepStrictEqual(
             ensure({ foo: { bar: '{"hello":"world"}' } }, { foo: { bar: Object } }),
@@ -78,16 +73,6 @@ describe("ensure: Object", () => {
         );
     });
 
-    it("should use the given objects in the schema as default values", () => {
-        assert.deepStrictEqual(
-            ensure(
-                { foo: null },
-                { foo: {}, bar: { hello: "world" } }
-            ),
-            { foo: {}, bar: { hello: "world" } }
-        );
-    });
-
     it("should create default values in sub-nodes", () => {
         assert.deepStrictEqual(
             ensure({ foo: {} }, { foo: { bar: Object } }),
@@ -107,45 +92,6 @@ describe("ensure: Object", () => {
         assert.deepStrictEqual(
             ensure({}, { foo: { bar: [{}] } }),
             { foo: { bar: [] } }
-        );
-    });
-
-    it("should support top level array schemas", () => {
-        assert.deepStrictEqual(
-            ensure(
-                [{ foo: '{"hello":"world"}' }],
-                [{ foo: Object }]
-            ),
-            [{ foo: { hello: "world" } }]
-        );
-    });
-
-    it("should throw proper error when casting failed on property", () => {
-        let [err1] = doTry(() => ensure({ foo: "Hello, World!" }, { foo: Object }));
-        let [err2] = doTry(() => ensure({ foo: { bar: "Hello, World!" } }, { foo: { bar: Object } }));
-        let [err3] = doTry(() => ensure({ foo: [123] }, { foo: [Object] }));
-        let [err4] = doTry(() => ensure([{ foo: true }], [{ foo: Object }]));
-        let [err5] = doTry(() => ensure([{ foo: { bar: false } }], [{ foo: { bar: Object } }]));
-
-        assert.strictEqual(
-            String(err1),
-            "TypeError: The value of 'foo' is not an Object and cannot be casted into one"
-        );
-        assert.strictEqual(
-            String(err2),
-            "TypeError: The value of 'foo.bar' is not an Object and cannot be casted into one"
-        );
-        assert.strictEqual(
-            String(err3),
-            "TypeError: The value of 'foo.0' is not an Object and cannot be casted into one"
-        );
-        assert.strictEqual(
-            String(err4),
-            "TypeError: The value of '0.foo' is not an Object and cannot be casted into one"
-        );
-        assert.strictEqual(
-            String(err5),
-            "TypeError: The value of '0.foo.bar' is not an Object and cannot be casted into one"
         );
     });
 });

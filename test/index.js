@@ -14,3 +14,4 @@ require("./ensure/TypedArray");
 typeof URL === "function" && require("./ensure/URL");
 require("./ensure/Error");
 require("./ensure/others");
+require("./ensure/common");

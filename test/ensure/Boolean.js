@@ -142,40 +142,4 @@ describe("ensure: Boolean", () => {
             { foo: { bar: [] } }
         );
     });
-
-    it("should support top level array schemas", () => {
-        assert.deepStrictEqual(
-            ensure([{ foo: 1 }, { foo: 0 }], [{ foo: Boolean }]),
-            [{ foo: true }, { foo: false }]
-        );
-    });
-
-    it("should throw proper error when casting failed on properties", () => {
-        let [err1] = doTry(() => ensure({ foo: "abc" }, { foo: Boolean }));
-        let [err2] = doTry(() => ensure({ foo: { bar: "abc" } }, { foo: { bar: Boolean } }));
-        let [err3] = doTry(() => ensure({ foo: ["abc"] }, { foo: [Boolean] }));
-        let [err4] = doTry(() => ensure([{ foo: "abc" }], [{ foo: Boolean }]));
-        let [err5] = doTry(() => ensure([{ foo: { bar: "abc" } }], [{ foo: { bar: Boolean } }]));
-
-        assert.deepStrictEqual(
-            String(err1),
-            "TypeError: The value of 'foo' is not a boolean and cannot be casted into one"
-        );
-        assert.deepStrictEqual(
-            String(err2),
-            "TypeError: The value of 'foo.bar' is not a boolean and cannot be casted into one"
-        );
-        assert.deepStrictEqual(
-            String(err3),
-            "TypeError: The value of 'foo.0' is not a boolean and cannot be casted into one"
-        );
-        assert.deepStrictEqual(
-            String(err4),
-            "TypeError: The value of '0.foo' is not a boolean and cannot be casted into one"
-        );
-        assert.deepStrictEqual(
-            String(err5),
-            "TypeError: The value of '0.foo.bar' is not a boolean and cannot be casted into one"
-        );
-    });
 });

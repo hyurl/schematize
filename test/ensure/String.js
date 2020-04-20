@@ -109,13 +109,6 @@ describe("ensure: String", () => {
         );
     });
 
-    it("should support top level array schemas", () => {
-        assert.deepStrictEqual(
-            ensure([{ foo: "Hello, World!" }, { foo: 123 }], [{ foo: String }]),
-            [{ foo: "Hello, World!" }, { foo: "123" }]
-        );
-    });
-
     it("should throw proper error when casting failed on property", () => {
         let [err1] = doTry(() => ensure({ foo: () => { } }, { foo: String }));
         let [err2] = doTry(() => ensure({ foo: { bar: () => { } } }, { foo: { bar: String } }));

@@ -93,40 +93,4 @@ describe("Symbol", () => {
             { foo: { bar: [] } }
         );
     });
-
-    it("should support top level array schemas", () => {
-        assert.deepStrictEqual(
-            ensure([{ foo: Symbol.for("foo") }, { foo: "foo" }], [{ foo: Symbol }]),
-            [{ foo: Symbol.for("foo") }, { foo: Symbol.for("foo") }]
-        );
-    });
-
-    it("should throw proper error when casting failed on property", () => {
-        let [err1] = doTry(() => ensure({ foo: () => { } }, { foo: Symbol }));
-        let [err2] = doTry(() => ensure({ foo: { bar: () => { } } }, { foo: { bar: Symbol } }));
-        let [err3] = doTry(() => ensure({ foo: [123] }, { foo: [Symbol] }));
-        let [err4] = doTry(() => ensure([{ foo: () => { } }], [{ foo: Symbol }]));
-        let [err5] = doTry(() => ensure([{ foo: { bar: () => { } } }], [{ foo: { bar: Symbol } }]));
-
-        assert.strictEqual(
-            String(err1),
-            "TypeError: The value of 'foo' is not a symbol and cannot be casted into one"
-        );
-        assert.strictEqual(
-            String(err2),
-            "TypeError: The value of 'foo.bar' is not a symbol and cannot be casted into one"
-        );
-        assert.strictEqual(
-            String(err3),
-            "TypeError: The value of 'foo.0' is not a symbol and cannot be casted into one"
-        );
-        assert.strictEqual(
-            String(err4),
-            "TypeError: The value of '0.foo' is not a symbol and cannot be casted into one"
-        );
-        assert.strictEqual(
-            String(err5),
-            "TypeError: The value of '0.foo.bar' is not a symbol and cannot be casted into one"
-        );
-    });
 });
