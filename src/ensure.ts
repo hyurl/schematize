@@ -270,11 +270,12 @@ function getHandles(
         case Array: return [type => {
             if (Array.isArray(value)) {
                 return value;
-            } else if (type === "string"
-                && value[0] === "["
-                && value[value.length - 1] === "]"
-            ) {
-                return JSON.parse(value);
+            } else if (type === "string") {
+                if (value[0] === "[" && value[value.length - 1] === "]") {
+                    return JSON.parse(value);
+                } else {
+                    return (<string>value).split(/\,\s*/);
+                }
             } else if (isIterable(value)) {
                 return Array.from(value);
             }
