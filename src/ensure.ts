@@ -251,8 +251,6 @@ function getHandles(
                 } else {
                     return Symbol.for(value);
                 }
-            } else if (type === "number" || type === "bigint") {
-                return Symbol.for(String(value));
             }
         }, base || null, "symbol"];
 
