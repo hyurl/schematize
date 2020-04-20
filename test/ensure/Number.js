@@ -1,7 +1,6 @@
 /* global describe, it */
 const assert = require("assert");
 const { ensure } = require("../..");
-const { default: doTry } = require("dotry");
 
 const date = new Date();
 

@@ -1,7 +1,6 @@
 /* global describe, it */
 const assert = require("assert");
 const { ensure } = require("../..");
-const { default: doTry } = require("dotry");
 
 const date = new Date();
 
@@ -106,35 +105,6 @@ describe("ensure: String", () => {
         assert.deepStrictEqual(
             ensure({}, { foo: { bar: [""] } }),
             { foo: { bar: [] } }
-        );
-    });
-
-    it("should throw proper error when casting failed on property", () => {
-        let [err1] = doTry(() => ensure({ foo: () => { } }, { foo: String }));
-        let [err2] = doTry(() => ensure({ foo: { bar: () => { } } }, { foo: { bar: String } }));
-        let [err3] = doTry(() => ensure({ foo: [Symbol("id")] }, { foo: [String] }));
-        let [err4] = doTry(() => ensure([{ foo: () => { } }], [{ foo: String }]));
-        let [err5] = doTry(() => ensure([{ foo: { bar: () => { } } }], [{ foo: { bar: String } }]));
-
-        assert.strictEqual(
-            String(err1),
-            "TypeError: The value of 'foo' is not a string and cannot be casted into one"
-        );
-        assert.strictEqual(
-            String(err2),
-            "TypeError: The value of 'foo.bar' is not a string and cannot be casted into one"
-        );
-        assert.strictEqual(
-            String(err3),
-            "TypeError: The value of 'foo.0' is not a string and cannot be casted into one"
-        );
-        assert.strictEqual(
-            String(err4),
-            "TypeError: The value of '0.foo' is not a string and cannot be casted into one"
-        );
-        assert.strictEqual(
-            String(err5),
-            "TypeError: The value of '0.foo.bar' is not a string and cannot be casted into one"
         );
     });
 });

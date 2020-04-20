@@ -1,7 +1,6 @@
 /* global describe, it */
 const assert = require("assert");
 const { ensure } = require("../..");
-const { default: doTry } = require("dotry");
 
 describe("ensure: Boolean", () => {
     it("should return as-is for existing properties of boolean type", () => {
