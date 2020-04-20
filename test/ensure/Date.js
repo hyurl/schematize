@@ -22,7 +22,7 @@ describe("ensure: Date", () => {
         );
     });
 
-    it("should cast existing properties of non-string type to strings", () => {
+    it("should cast existing properties of non-date type to Dates", () => {
         assert.deepStrictEqual(
             ensure({ foo: date.toISOString() }, { foo: Date }),
             { foo: date }
