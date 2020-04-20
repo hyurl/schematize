@@ -5,27 +5,24 @@ const { ensure } = require("../..");
 const date = new Date();
 
 describe("ensure: Date", () => {
-    it("should ensure default value", () => {
-        assert(ensure({}, { foo: Date }).foo instanceof Date);
-        assert.deepStrictEqual(ensure({}, { foo: date }), { foo: date });
-    });
-
-    it("should ensure default value in sub-nodes", () => {
-        assert.deepStrictEqual(
-            ensure({ foo: {} }, { foo: { bar: date } }),
-            { foo: { bar: date } }
-        );
-        assert.deepStrictEqual(
-            ensure({}, { foo: { bar: date } }),
-            { foo: { bar: date } }
-        );
-    });
-
-    it("should cast existing value to Date", () => {
+    it("should return as-is for existing properties of Date type", () => {
         assert.deepStrictEqual(
             ensure({ foo: date }, { foo: Date }),
             { foo: date }
         );
+    });
+
+    it("should return as-is for existing sub-properties of Date type", () => {
+        assert.deepStrictEqual(
+            ensure(
+                { foo: { bar: date } },
+                { foo: { bar: Date } }
+            ),
+            { foo: { bar: date } }
+        );
+    });
+
+    it("should cast existing properties of non-string type to strings", () => {
         assert.deepStrictEqual(
             ensure({ foo: date.toISOString() }, { foo: Date }),
             { foo: date }
@@ -36,7 +33,7 @@ describe("ensure: Date", () => {
         );
     });
 
-    it("should cast existing value to Date", () => {
+    it("should cast existing values in sub-node to Dates", () => {
         assert.deepStrictEqual(
             ensure(
                 { foo: { bar: date.toISOString() } },
@@ -50,33 +47,29 @@ describe("ensure: Date", () => {
         );
     });
 
-    it("should throw proper error if casting failed", () => {
-        let err;
-
-        try {
-            ensure({ foo: "not a date" }, { foo: Date });
-        } catch (e) {
-            err = e;
-        }
-
+    it("should cast all elements in an array to Dates by array schema", () => {
         assert.deepStrictEqual(
-            String(err),
-            "TypeError: The value of 'foo' is not a Date and cannot be casted into one"
+            ensure({ foo: [date.toISOString(), date.valueOf()] }, { foo: [Date] }),
+            { foo: [date, date] }
         );
     });
 
-    it("should throw proper error if casting failed in sub-nodes", () => {
-        let err;
+    it("should use the current date as default value for missing properties", () => {
+        assert(ensure({}, { foo: Date }).foo instanceof Date);
+    });
 
-        try {
-            ensure({ foo: { bar: "not a date" } }, { foo: { bar: Date } });
-        } catch (e) {
-            err = e;
-        }
+    it("should use the given date as the default value for missing properties", () => {
+        assert.deepStrictEqual(ensure({}, { foo: date }), { foo: date });
+    });
 
+    it("should create default values in sub-nodes", () => {
         assert.deepStrictEqual(
-            String(err),
-            "TypeError: The value of 'foo.bar' is not a Date and cannot be casted into one"
+            ensure({ foo: {} }, { foo: { bar: date } }),
+            { foo: { bar: date } }
+        );
+        assert.deepStrictEqual(
+            ensure({}, { foo: { bar: date } }),
+            { foo: { bar: date } }
         );
     });
 });
