@@ -23,7 +23,7 @@ describe("ensure: Map", () => {
         );
     });
 
-    it("should cast existing properties of non-url type to Map", () => {
+    it("should cast existing properties of non-map type to Map", () => {
         assert.deepStrictEqual(
             ensure({ foo: entries }, { foo: Map }),
             { foo: map }
