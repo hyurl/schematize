@@ -13,7 +13,7 @@ describe("ensure: Buffer", () => {
         );
     });
 
-    it("should return as-is for existing sub-properties of Set type", () => {
+    it("should return as-is for existing sub-properties of Buffer type", () => {
         assert.deepStrictEqual(
             ensure(
                 { foo: { bar: buf } },

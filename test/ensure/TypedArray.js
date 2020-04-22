@@ -2,88 +2,64 @@
 const assert = require("assert");
 const { ensure } = require("../..");
 
+const entries = [-126, 0, 127];
+const arr = Int8Array.from(entries);
+
 describe("ensure: TypedArray", () => {
-    it("should ensure default value", () => {
+    it("should return as-is for existing properties of Int8Array type", () => {
         assert.deepStrictEqual(
-            ensure({}, { foo: Uint8Array }),
-            { foo: Uint8Array.from([]) }
-        );
-        assert.deepStrictEqual(
-            ensure({}, { foo: Uint16Array }),
-            { foo: Uint16Array.from([]) }
+            ensure({ foo: arr }, { foo: Int8Array }),
+            { foo: arr }
         );
     });
 
-    it("should ensure default value in sub-nodes", () => {
-        assert.deepStrictEqual(
-            ensure({ foo: {} }, { foo: { bar: Uint32Array } }),
-            { foo: { bar: Uint32Array.from([]) } }
-        );
-        assert.deepStrictEqual(
-            ensure({}, { foo: { bar: Int8Array.from([0, 1, 127]) } }),
-            { foo: { bar: Int8Array.from([0, 1, 127]) } }
-        );
-    });
-
-    it("should cast existing value to a TypedArray", () => {
-        assert.deepStrictEqual(
-            ensure({ foo: Uint8Array.from([0, 1, 255]) }, { foo: Uint8Array }),
-            { foo: Uint8Array.from([0, 1, 255]) }
-        );
-        assert.deepStrictEqual(
-            ensure({ foo: [0, 1, 255] }, { foo: Uint8Array }),
-            { foo: Uint8Array.from([0, 1, 255]) }
-        );
-        assert.deepStrictEqual(
-            ensure({ foo: new Set([0, 1, 127]) }, { foo: Int8Array }),
-            { foo: Int8Array.from([0, 1, 127]) }
-        );
-    });
-
-    it("should cast existing value in sub-nodes to a TypedArray", () => {
+    it("should return as-is for existing sub-properties of Int8Array type", () => {
         assert.deepStrictEqual(
             ensure(
-                { foo: { bar: [0, 1, 255] } },
-                { foo: { bar: Uint8Array } }
-            ),
-            { foo: { bar: Uint8Array.from([0, 1, 255]) } }
-        );
-        assert.deepStrictEqual(
-            ensure(
-                { foo: { bar: new Set([0, 1, 127]) } },
+                { foo: { bar: arr } },
                 { foo: { bar: Int8Array } }
             ),
-            { foo: { bar: Int8Array.from([0, 1, 127]) } }
+            { foo: { bar: arr } }
         );
     });
 
-    it("should throw proper error if casting failed", () => {
-        let err;
-
-        try {
-            ensure({ foo: 123 }, { foo: Uint8Array });
-        } catch (e) {
-            err = e;
-        }
-
+    it("should cast existing properties of non-typed-array type to Int8Array", () => {
         assert.deepStrictEqual(
-            String(err),
-            "TypeError: The value of 'foo' is not a(n) Uint8Array and cannot be casted into one"
+            ensure({ arr: entries }, { arr: Int8Array }),
+            { arr }
         );
     });
 
-    it("should throw proper error if casting failed in sub-nodes", () => {
-        let err;
-
-        try {
-            ensure({ foo: { bar: 123 } }, { foo: { bar: Int8Array } });
-        } catch (e) {
-            err = e;
-        }
-
+    it("should cast existing values in sub-node to Int8Arrays", () => {
         assert.deepStrictEqual(
-            String(err),
-            "TypeError: The value of 'foo.bar' is not an Int8Array and cannot be casted into one"
+            ensure({ foo: { bar: entries } }, { foo: { bar: Int8Array } }),
+            { foo: { bar: arr } }
+        );
+    });
+
+    it("should cast all elements in an array to Int8Arrays by array schema", () => {
+        assert.deepStrictEqual(
+            ensure({ foo: [entries] }, { foo: [Int8Array] }),
+            { foo: [arr] }
+        );
+    });
+
+    it("should use an empty Int8Array as the default value for missing properties", () => {
+        assert.deepStrictEqual(ensure({}, { foo: Int8Array }), { foo: Int8Array.from([]) });
+    });
+
+    it("should use the given Int8Array object as the default value for missing properties", () => {
+        assert.deepStrictEqual(ensure({}, { foo: arr }), { foo: arr });
+    });
+
+    it("should create default values in sub-nodes", () => {
+        assert.deepStrictEqual(
+            ensure({}, { foo: { bar: Int8Array } }),
+            { foo: { bar: Int8Array.from([]) } }
+        );
+        assert.deepStrictEqual(
+            ensure({}, { foo: { bar: arr } }),
+            { foo: { bar: arr } }
         );
     });
 });
