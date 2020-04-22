@@ -2,19 +2,72 @@
 const assert = require("assert");
 const { ensure } = require("../..");
 
-describe("ensure: Buffer", () => {
-    const entries = [0, 1, 255];
-    const buf = Buffer.from(entries);
+const entries = [0, 1, 255];
+const buf = Buffer.from(entries);
 
-    it("should ensure default value", () => {
+describe("ensure: Buffer", () => {
+    it("should return as-is for existing properties of Buffer type", () => {
         assert.deepStrictEqual(
-            ensure({}, { foo: Buffer }),
-            { foo: Buffer.from([]) }
+            ensure({ foo: buf }, { foo: Buffer }),
+            { foo: buf }
         );
+    });
+
+    it("should return as-is for existing sub-properties of Set type", () => {
+        assert.deepStrictEqual(
+            ensure(
+                { foo: { bar: buf } },
+                { foo: { bar: Buffer } }
+            ),
+            { foo: { bar: buf } }
+        );
+    });
+
+    it("should cast existing properties of non-buffer type to Buffer", () => {
+        assert.deepStrictEqual(
+            ensure({
+                arr: entries,
+                str: "Hello, World!",
+                uint8: Uint8Array.from([0, 1, 2, 3]),
+                buf: new ArrayBuffer(8)
+            }, {
+                arr: Buffer,
+                str: Buffer,
+                uint8: Buffer,
+                buf: Buffer
+            }),
+            {
+                arr: buf,
+                str: Buffer.from("Hello, World!"),
+                uint8: Buffer.from(Uint8Array.from([0, 1, 2, 3])),
+                buf: Buffer.from(new ArrayBuffer(8))
+            }
+        );
+    });
+
+    it("should cast existing values in sub-node to Buffers", () => {
+        assert.deepStrictEqual(
+            ensure({ foo: { bar: entries } }, { foo: { bar: Buffer } }),
+            { foo: { bar: buf } }
+        );
+    });
+
+    it("should cast all elements in an array to Buffers by array schema", () => {
+        assert.deepStrictEqual(
+            ensure({ foo: [entries] }, { foo: [Buffer] }),
+            { foo: [buf] }
+        );
+    });
+
+    it("should use an empty Buffer as the default value for missing properties", () => {
+        assert.deepStrictEqual(ensure({}, { foo: Buffer }), { foo: Buffer.from([]) });
+    });
+
+    it("should use the given set object as the default value for missing properties", () => {
         assert.deepStrictEqual(ensure({}, { foo: buf }), { foo: buf });
     });
 
-    it("should ensure default value in sub-nodes", () => {
+    it("should create default values in sub-nodes", () => {
         assert.deepStrictEqual(
             ensure({}, { foo: { bar: Buffer } }),
             { foo: { bar: Buffer.from([]) } }
@@ -22,75 +75,6 @@ describe("ensure: Buffer", () => {
         assert.deepStrictEqual(
             ensure({}, { foo: { bar: buf } }),
             { foo: { bar: buf } }
-        );
-    });
-
-    it("should cast existing value to Buffer", () => {
-        assert.deepStrictEqual(
-            ensure({ foo: buf }, { foo: Buffer }),
-            { foo: buf }
-        );
-        assert.deepStrictEqual(
-            ensure({ foo: entries }, { foo: Buffer }),
-            { foo: buf }
-        );
-        assert.deepStrictEqual(
-            ensure(
-                { foo: "Hello, World!" },
-                { foo: Buffer }
-            ),
-            { foo: Buffer.from("Hello, World!") }
-        );
-        assert.deepStrictEqual(
-            ensure(
-                { foo: Uint8Array.from(entries) },
-                { foo: Buffer }
-            ),
-            { foo: Buffer.from(entries) }
-        );
-        assert.deepStrictEqual(
-            ensure(
-                { foo: Uint8Array.from(entries).buffer },
-                { foo: Buffer }
-            ),
-            { foo: Buffer.from(entries) }
-        );
-    });
-
-    it("should cast existing value in sub-nodes to Buffer", () => {
-        assert.deepStrictEqual(
-            ensure({ foo: { bar: entries } }, { foo: { bar: Buffer } }),
-            { foo: { bar: buf } }
-        );
-    });
-
-    it("should throw proper error if casting failed", () => {
-        let err;
-
-        try {
-            ensure({ foo: 123 }, { foo: Buffer });
-        } catch (e) {
-            err = e;
-        }
-
-        assert.deepStrictEqual(
-            String(err),
-            "TypeError: The value of 'foo' is not a Buffer and cannot be casted into one"
-        );
-    });
-
-    it("should throw proper error if casting failed in sub-nodes", () => {
-        let err;
-
-        try {
-            ensure({ foo: { bar: 123 } }, { foo: { bar: Buffer } });
-        } catch (e) {
-            err = e;
-        }
-
-        assert.deepStrictEqual(
-            String(err),
-            "TypeError: The value of 'foo.bar' is not a Buffer and cannot be casted into one"
         );
     });
 });
