@@ -407,13 +407,13 @@ function cast(
                     (getGlobal(value["name"]) || base).prototype
                 );
 
-                define(err, "message", value["message"], true);
+                define(err, "message", value["message"], false, true);
 
                 if (err.name !== value["name"])
-                    define(err, "message", value["name"], true);
+                    define(err, "name", value["name"], false, true);
 
                 if (typeof value["stack"] === "string")
-                    define(err, "stack", value["stack"], true);
+                    define(err, "stack", value["stack"], false, true);
 
                 return err;
             }

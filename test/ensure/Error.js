@@ -1,70 +1,67 @@
 /* global describe, it */
 const assert = require("assert");
 const { ensure } = require("../..");
+const pick = require("@hyurl/utils/pick").default;
+
+const err = new Error("Something went wrong");
+const errObj = pick(err, ["name", "message", "stack"]);
 
 describe("ensure: Error", () => {
-    it("should ensure default value", () => {
-        assert.deepStrictEqual(ensure({}, { foo: Error }), { foo: null });
+    it("should return as-is for existing properties of Error type", () => {
         assert.deepStrictEqual(
-            ensure({}, { foo: TypeError }),
-            { foo: null }
-        );
-
-        const stxErr = new SyntaxError("invalid syntax");
-
-        assert.deepStrictEqual(
-            ensure({}, { foo: stxErr }),
-            { foo: stxErr }
+            ensure({ foo: err }, { foo: Error }),
+            { foo: err }
         );
     });
 
-    it("should cast existing value to an Error", () => {
-        let msg = "something went wrong";
-        let err = new RangeError(msg);
-        let errObj = {
-            name: "RangeError",
-            message: msg,
-            stack: err.stack
-        };
+    it("should return as-is for existing properties of Error-derivative type", () => {
+        const err = new SyntaxError("Illegal syntax");
 
         assert.deepStrictEqual(
             ensure({ foo: err }, { foo: Error }),
             { foo: err }
         );
-
-        let obj1 = ensure({ foo: msg }, { foo: Error });
-        assert(obj1.foo instanceof Error);
-        assert.strictEqual(obj1.foo.message, msg);
-
-        let obj2 = ensure({ foo: msg }, { foo: EvalError });
-        assert(obj2.foo instanceof EvalError);
-        assert.strictEqual(obj2.foo.message, msg);
-
-        let obj3 = ensure({ foo: errObj }, { foo: RangeError });
-        assert(obj3.foo instanceof RangeError);
-        assert.strictEqual(obj3.foo.name, "RangeError");
-        assert.strictEqual(obj3.foo.message, msg);
-        assert.strictEqual(obj3.foo.stack, err.stack);
-
-        let obj4 = ensure({ foo: errObj }, { foo: Error });
-        assert(obj3.foo instanceof RangeError);
-        assert.strictEqual(obj4.foo.name, "RangeError");
-        assert.strictEqual(obj4.foo.message, msg);
-        assert.strictEqual(obj4.foo.stack, err.stack);
     });
 
-    it("should throw proper error if cast failed", () => {
-        let err;
-
-        try {
-            ensure({ foo: 123 }, { foo: URIError });
-        } catch (e) {
-            err = e;
-        }
-
-        assert.strictEqual(
-            String(err),
-            "TypeError: The value of 'foo' is not a(n) URIError and cannot be casted into one"
+    it("should return as-is for existing sub-properties of Date type", () => {
+        assert.deepStrictEqual(
+            ensure(
+                { foo: { bar: err } },
+                { foo: { bar: Error } }
+            ),
+            { foo: { bar: err } }
         );
+    });
+
+
+    it("should cast existing properties of non-error type to Errors", () => {
+        let err1 = ensure({ foo: errObj }, { foo: Error }).foo;
+        let err2 = ensure(
+            { foo: { name: "SyntaxError", message: "Illegal syntax" } },
+            { foo: Error }
+        ).foo;
+        let err3 = ensure({ foo: "Invalid type" }, { foo: TypeError }).foo;
+
+        assert(err1 instanceof Error);
+        assert.strictEqual(err1.name, "Error");
+        assert.strictEqual(err1.message, "Something went wrong");
+        assert.strictEqual(err1.stack, err.stack);
+
+        assert(err2 instanceof SyntaxError);
+        assert.strictEqual(err2.name, "SyntaxError");
+        assert.strictEqual(err2.message, "Illegal syntax");
+
+        assert(err3 instanceof TypeError);
+        assert.strictEqual(err3.name, "TypeError");
+        assert.strictEqual(err3.message, "Invalid type");
+    });
+
+    it("should cast existing values in sub-node to Dates", () => {
+        let err = ensure({ foo: { bar: errObj } }, { foo: { bar: Error } }).foo.bar;
+
+        assert(err instanceof Error);
+        assert.strictEqual(err.name, "Error");
+        assert.strictEqual(err.message, "Something went wrong");
+        assert.strictEqual(err.stack, err.stack);
     });
 });
