@@ -1,4 +1,6 @@
+import "@hyurl/utils/types";
 import { Constructed } from ".";
+import { OptionalOf } from "./utils";
 import getGlobal from "@hyurl/utils/getGlobal";
 import typeOf from "@hyurl/utils/typeOf";
 import isVoid from "@hyurl/utils/isVoid";
@@ -70,6 +72,8 @@ function isOf(value: any, base: any): boolean {
         case Array: return Array.isArray(value);
 
         case Buffer: return Buffer.isBuffer(value);
+
+        case OptionalOf: return isVoid(value) || isOf(value, base.base);
 
         default: {
             let type = typeOf(base);

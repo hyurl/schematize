@@ -1,5 +1,6 @@
+import "@hyurl/utils/types";
 import { Constructed } from ".";
-import { OptionalKeys } from "./utils";
+import { OptionalKeys, OptionalOf } from "./utils";
 import { isIterable } from "check-iterable";
 import isVoid from "@hyurl/utils/isVoid";
 import typeOf, { TypeNames } from "@hyurl/utils/typeOf";
@@ -88,12 +89,15 @@ function makeSure<T>(
     }
 
     let result = Reflect.ownKeys(<any>schema).reduce((result, prop) => {
-        result[prop] = cast(
+        let _value = cast(
             field ? `${field}.${String(prop)}` : String(prop),
             value[prop], // value
             (<any>schema)[prop], // constructor or default value
             omitUntyped
         );
+
+        if (_value !== void 0)
+            result[prop] = _value;
 
         return result;
     }, <any>{});
@@ -350,8 +354,17 @@ function cast(
     base: any,
     omitUntyped: boolean,
 ): any {
-    let type = typeOf(base);
     let exists = !isVoid(value);
+
+    if (base instanceof OptionalOf) {
+        if (!exists) {
+            return void 0;
+        } else {
+            base = base.base;
+        }
+    }
+
+    let type = typeOf(base);
     let handles = getHandles(type, base, value);
 
     if (!isEmpty(handles)) {

@@ -1,13 +1,12 @@
 import "@hyurl/utils/types";
 import ensure from "./ensure";
 import match from "./match";
-import { Optional, Exact, ExactOf, OptionalOf } from "./utils";
+import { Optional, OptionalOf } from "./utils";
 
 export {
     ensure,
     match,
-    Optional,
-    Exact
+    Optional
 }
 
 export type Constructed<T> = {
@@ -20,7 +19,6 @@ export type Constructed<T> = {
         T[P] extends typeof Object ? object :
         T[P] extends typeof Buffer ? Buffer :
         T[P] extends OptionalOf<infer U> ? Constructed<U> :
-        T[P] extends ExactOf<infer U> ? Constructed<U> :
         T[P] extends Constructor<infer R> ? R :
         T[P] extends Function ? T[P] :
         T[P] extends object ? Constructed<T[P]> :
