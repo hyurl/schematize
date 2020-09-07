@@ -15,3 +15,14 @@ typeof URL === "function" && require("./ensure/URL");
 require("./ensure/Error");
 require("./ensure/others");
 require("./ensure/common");
+
+require("./match/String");
+require("./match/Number");
+typeof BigInt === "function" && require("./match/BigInt");
+require("./match/Boolean");
+require("./match/Symbol");
+require("./match/Object");
+require("./match/Array");
+require("./match/Buffer");
+require("./match/TypedArray");
+require("./match/common");

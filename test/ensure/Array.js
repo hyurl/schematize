@@ -61,7 +61,7 @@ describe("ensure: Array", () => {
             { foo: { bar: [] } }
         );
         assert.deepStrictEqual(
-            ensure({}, { foo: { bar: [] } }, { foo: { bar: [] } }),
+            ensure({}, { foo: { bar: [] } }),
             { foo: { bar: [] } }
         );
     });

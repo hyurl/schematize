@@ -1,30 +1,40 @@
 import "@hyurl/utils/types";
-import { Constructed } from ".";
-import { OptionalOf } from "./utils";
+import { Structured, OptionalOf } from "./types";
 import getGlobal from "@hyurl/utils/getGlobal";
 import typeOf from "@hyurl/utils/typeOf";
-import isVoid from "@hyurl/utils/isVoid";
 import isEmpty from "@hyurl/utils/isEmpty";
 
 // HACK, prevent throwing error when the runtime doesn't support these types.
 var BigInt: BigIntConstructor = getGlobal("BigInt") || new Function() as any;
 var Buffer: typeof global.Buffer = getGlobal("Buffer") || new Function() as any;
 
+/**
+ * Performs a pattern matching on an array according to the given schema.
+ * @param schema For array of objects, the schema must be defined as an array
+ *  with one element which sets the types for all objects in the input array.
+ * @param exactMatch If set, the objects in the input array must only contain
+ *  the properties that are presented in the schema.
+ */
 export default function match<T>(
     arr: any[],
     schema: [T],
-    extractMatch?: boolean
-): arr is Constructed<T>[];
+    exactMatch?: boolean
+): arr is Structured<T>[];
+/**
+ * Performs a pattern matching on an object according to the given schema.
+ * @param exactMatch If set, the object must only contain the properties that
+ *  are presented in the schema.
+ */
 export default function match<T extends object>(
     obj: object,
     schema: T,
-    extractMatch?: boolean
-): obj is Constructed<T>;
+    exactMatch?: boolean
+): obj is Structured<T>;
 export default function match<T extends object>(
     obj: any,
     schema: T,
-    extractMatch = false
-): obj is Constructed<T> {
+    exactMatch = false
+): obj is Structured<T> {
     if (obj === null ||
         typeof obj !== "object" ||
         (Array.isArray(obj) && !Array.isArray(schema))
@@ -33,7 +43,7 @@ export default function match<T extends object>(
     } else if (Array.isArray(schema)) {
         if (schema.length === 1) {
             if (Array.isArray(obj)) {
-                return obj.every(o => match(o, schema[0]));
+                return obj.every(o => isOf(o, schema[0]));
             } else {
                 return false;
             }
@@ -44,15 +54,30 @@ export default function match<T extends object>(
         }
     }
 
-    let keys = Reflect.ownKeys(schema);
+    let schemaKeys = Reflect.ownKeys(schema);
+    let actualKeys = Reflect.ownKeys(obj);
 
-    if ((extractMatch && Reflect.ownKeys(obj).some(key => !keys.includes(key)))
-        || keys.some(key => isVoid(obj[key]) || !isOf(obj[key], schema[key]))
+    if (exactMatch &&
+        (actualKeys.length !== schemaKeys.length || actualKeys.some(
+            key => !schemaKeys.includes(key)
+        ))
     ) {
         return false;
-    } else {
-        return true;
     }
+
+    if (!schemaKeys.every(key => {
+        if (schema[key] instanceof OptionalOf) {
+            return obj[key] === void 0
+                || obj[key] === null
+                || isOf(obj[key], schema[key].base);
+        } else {
+            return isOf(obj[key], schema[key]);
+        }
+    })) {
+        return false;
+    }
+
+    return true;
 }
 
 function isOf(value: any, base: any): boolean {
@@ -65,15 +90,13 @@ function isOf(value: any, base: any): boolean {
 
         case Boolean: return typeof value === "boolean";
 
-        case Symbol: return typeof value === "string";
+        case Symbol: return typeof value === "symbol";
 
-        case Object: return typeOf(value) === Object;
+        case Object: return typeOf(value) === Object; // must be plain object
 
         case Array: return Array.isArray(value);
 
         case Buffer: return Buffer.isBuffer(value);
-
-        case OptionalOf: return isVoid(value) || isOf(value, base.base);
 
         default: {
             let type = typeOf(base);
@@ -86,8 +109,26 @@ function isOf(value: any, base: any): boolean {
                 } else { // sub-schema
                     return match(value, base);
                 }
+            } else if ((type === Buffer || type === Uint8Array)
+                && (Buffer.isBuffer(value))
+                || (type === Uint8Array && typeOf(value) === Uint8Array)
+            ) { // compare Buffer or Uint8Array
+                return Buffer.compare(<any>value, base) === 0;
+            } else if (type === RegExp && value instanceof RegExp) { // RegExp
+                return String(value) === String(base);
+            } else if (type === Date && value instanceof Date) { // Date
+                return value.valueOf() === base.valueOf();
+            } else if (type === "symbol" && typeOf(value) === "symbol") {
+                // Use Symbol.keyFor will both compare their key and registry
+                if (Symbol.keyFor(value) === Symbol.keyFor(base)) {
+                    return String(value) === String(base);
+                } else {
+                    return false;
+                }
             } else {
-                return value === base;
+                // === cannot compare NaN, use Object.is;
+                // Object.is cannot compare +0 and -0, use ===;
+                return value === base || Object.is(value, base);
             }
         }
     }

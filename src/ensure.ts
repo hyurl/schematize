@@ -1,6 +1,5 @@
 import "@hyurl/utils/types";
-import { Constructed } from ".";
-import { OptionalKeys, OptionalOf } from "./utils";
+import { OptionalOf, OptionalStructured } from "./types";
 import { isIterable } from "check-iterable";
 import isVoid from "@hyurl/utils/isVoid";
 import typeOf, { TypeNames } from "@hyurl/utils/typeOf";
@@ -14,26 +13,22 @@ var BigInt: BigIntConstructor = getGlobal("BigInt") || new Function() as any;
 var URL: typeof globalThis.URL = getGlobal("URL") || new Function() as any;
 var Buffer: typeof global.Buffer = getGlobal("Buffer") || new Function() as any;
 
-type ConstructedObject<T> = Optional<Constructed<T>, OptionalKeys<T>>;
-
 /**
- * Make sure the input array of objects is restraint with the types defined in
- * the schema and automatically fills any properties that is missing.
+ * Makes sure the input array of objects is restraint with the types defined in
+ * the schema and automatically fills any property that is missing.
  * @param schema For array of objects, the schema must be defined as an array
  *  with one element which sets the types for all objects in the input array.
- * @param omitUntyped If set, those properties that are not specified in schema
- *  will be removed.
+ * @param omitUntyped If set, those properties that are not specified in the
+ *  schema will be removed.
  */
 export default function ensure<T>(
     arr: any[],
     schema: [T],
     omitUntyped?: boolean
-): ConstructedObject<T>[];
+): OptionalStructured<T>[];
 /**
- * Make sure the input object is restraint with the types defied in the schema
- * and automatically fills any properties that is missing.
- * @param obj 
- * @param schema 
+ * Makes sure the input object is restraint with the types defined in the schema
+ * and automatically fills any property that is missing.
  * @param omitUntyped If set, those properties that are not specified in schema
  *  will be removed.
  */
@@ -41,7 +36,7 @@ export default function ensure<T>(
     obj: any,
     schema: T,
     omitUntyped?: boolean
-): ConstructedObject<T>;
+): OptionalStructured<T>;
 export default function ensure<T>(obj: any, schema: T = null, omitUntyped = false) {
     return makeSure("", obj, schema, omitUntyped);
 }
@@ -198,6 +193,8 @@ function getHandles(
 
             if (type === "number") {
                 return value;
+            } else if (type === "bigint") {
+                return Number(value);
             } else if (type === "string" && !isNaN(num = Number(value))) {
                 return num;
             } else if (value instanceof Date) {
@@ -269,7 +266,7 @@ function getHandles(
             ) {
                 return JSON.parse(value);
             }
-        }, () => <any>{}, "Object"];
+        }, () => (<any>{}), "Object"];
 
         case Array: return [type => {
             if (Array.isArray(value)) {
