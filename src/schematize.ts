@@ -14,30 +14,30 @@ var URL: typeof globalThis.URL = getGlobal("URL") || new Function() as any;
 var Buffer: typeof global.Buffer = getGlobal("Buffer") || new Function() as any;
 
 /**
- * Makes sure the input array of objects is restraint with the types defined in
+ * Ensures the input array of objects is restraint with the types defined in
  * the schema and automatically fills any property that is missing.
  * @param schema For array of objects, the schema must be defined as an array
  *  with one element which sets the types for all objects in the input array.
  * @param omitUntyped If set, those properties that are not specified in the
  *  schema will be removed.
  */
-export default function ensure<T>(
+export default function schematize<T>(
     arr: any[],
     schema: [T],
     omitUntyped?: boolean
 ): OptionalStructured<T>[];
 /**
- * Makes sure the input object is restraint with the types defined in the schema
+ * Ensures the input object is restraint with the types defined in the schema
  * and automatically fills any property that is missing.
  * @param omitUntyped If set, those properties that are not specified in schema
  *  will be removed.
  */
-export default function ensure<T>(
+export default function schematize<T>(
     obj: any,
     schema: T,
     omitUntyped?: boolean
 ): OptionalStructured<T>;
-export default function ensure<T>(obj: any, schema: T = null, omitUntyped = false) {
+export default function schematize<T>(obj: any, schema: T = null, omitUntyped = false) {
     return makeSure("", obj, schema, omitUntyped);
 }
 

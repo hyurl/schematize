@@ -2,7 +2,7 @@
 const assert = require("assert");
 const { match } = require("../..");
 
-describe("match: BigInt", () => {
+describe("match: Number", () => {
     it("should pass for numbers", () => {
         assert(match(
             { foo: 123, bar: 456, foo2: -0, bar2: NaN },

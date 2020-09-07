@@ -1,15 +1,15 @@
 /* global describe, it */
 const assert = require("assert");
-const { ensure } = require("../..");
+const { schematize } = require("../..");
 const pick = require("@hyurl/utils/pick").default;
 
 const err = new Error("Something went wrong");
 const errObj = pick(err, ["name", "message", "stack"]);
 
-describe("ensure: Error", () => {
+describe("schematize: Error", () => {
     it("should return as-is for existing properties of Error type", () => {
         assert.deepStrictEqual(
-            ensure({ foo: err }, { foo: Error }),
+            schematize({ foo: err }, { foo: Error }),
             { foo: err }
         );
     });
@@ -18,14 +18,14 @@ describe("ensure: Error", () => {
         const err = new SyntaxError("Illegal syntax");
 
         assert.deepStrictEqual(
-            ensure({ foo: err }, { foo: Error }),
+            schematize({ foo: err }, { foo: Error }),
             { foo: err }
         );
     });
 
     it("should return as-is for existing sub-properties of Date type", () => {
         assert.deepStrictEqual(
-            ensure(
+            schematize(
                 { foo: { bar: err } },
                 { foo: { bar: Error } }
             ),
@@ -35,12 +35,12 @@ describe("ensure: Error", () => {
 
 
     it("should cast existing properties of non-error type to Errors", () => {
-        let err1 = ensure({ foo: errObj }, { foo: Error }).foo;
-        let err2 = ensure(
+        let err1 = schematize({ foo: errObj }, { foo: Error }).foo;
+        let err2 = schematize(
             { foo: { name: "SyntaxError", message: "Illegal syntax" } },
             { foo: Error }
         ).foo;
-        let err3 = ensure({ foo: "Invalid type" }, { foo: TypeError }).foo;
+        let err3 = schematize({ foo: "Invalid type" }, { foo: TypeError }).foo;
 
         assert(err1 instanceof Error);
         assert.strictEqual(err1.name, "Error");
@@ -57,7 +57,7 @@ describe("ensure: Error", () => {
     });
 
     it("should cast existing values in sub-node to Dates", () => {
-        let err = ensure({ foo: { bar: errObj } }, { foo: { bar: Error } }).foo.bar;
+        let err = schematize({ foo: { bar: errObj } }, { foo: { bar: Error } }).foo.bar;
 
         assert(err instanceof Error);
         assert.strictEqual(err.name, "Error");

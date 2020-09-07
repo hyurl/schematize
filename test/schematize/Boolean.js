@@ -1,18 +1,18 @@
 /* global describe, it */
 const assert = require("assert");
-const { ensure } = require("../..");
+const { schematize } = require("../..");
 
-describe("ensure: Boolean", () => {
+describe("schematize: Boolean", () => {
     it("should return as-is for existing properties of boolean type", () => {
         assert.deepStrictEqual(
-            ensure({ foo: true, bar: false }, { foo: Boolean, bar: Boolean }),
+            schematize({ foo: true, bar: false }, { foo: Boolean, bar: Boolean }),
             { foo: true, bar: false }
         );
     });
 
     it("should return as-is for existing sub-properties of number type", () => {
         assert.deepStrictEqual(
-            ensure(
+            schematize(
                 { foo: { bar: true }, bar: { foo: false } },
                 { foo: { bar: Boolean }, bar: { foo: Boolean } }
             ),
@@ -33,7 +33,7 @@ describe("ensure: Boolean", () => {
         };
 
         assert.deepStrictEqual(
-            ensure(
+            schematize(
                 {
                     a: 1,
                     b: "1",
@@ -59,7 +59,7 @@ describe("ensure: Boolean", () => {
         );
 
         assert.deepStrictEqual(
-            ensure(
+            schematize(
                 {
                     a: 0,
                     b: "0",
@@ -87,14 +87,14 @@ describe("ensure: Boolean", () => {
 
     it("should cast existing values in sub-nodes to booleans", () => {
         assert.deepStrictEqual(
-            ensure({ foo: { bar: 1 } }, { foo: { bar: Boolean } }),
+            schematize({ foo: { bar: 1 } }, { foo: { bar: Boolean } }),
             { foo: { bar: true } }
         );
     });
 
     it("should cast all elements in an array to boolean by array schema", () => {
         assert.deepStrictEqual(
-            ensure(
+            schematize(
                 { foo: [1, 0, "1", "0", "true", "false", "yes", "no"] },
                 { foo: [Boolean] }
             ),
@@ -104,40 +104,40 @@ describe("ensure: Boolean", () => {
 
     it("should use `false` as default value for missing properties", () => {
         assert.deepStrictEqual(
-            ensure({}, { foo: Boolean }),
+            schematize({}, { foo: Boolean }),
             { foo: false }
         );
         assert.deepStrictEqual(
-            ensure({ foo: null }, { foo: Boolean }),
+            schematize({ foo: null }, { foo: Boolean }),
             { foo: false }
         );
     });
 
     it("should use the given numbers in the schema as default values", () => {
         assert.deepStrictEqual(
-            ensure({}, { foo: true, bar: false }),
+            schematize({}, { foo: true, bar: false }),
             { foo: true, bar: false }
         );
     });
 
     it("should create default values in sub-nodes", () => {
         assert.deepStrictEqual(
-            ensure({ foo: {} }, { foo: { bar: Boolean } }),
+            schematize({ foo: {} }, { foo: { bar: Boolean } }),
             { foo: { bar: false } }
         );
         assert.deepStrictEqual(
-            ensure({}, { foo: { bar: false } }),
+            schematize({}, { foo: { bar: false } }),
             { foo: { bar: false } }
         );
     });
 
     it("should create empty arrays for array schemas", () => {
         assert.deepStrictEqual(
-            ensure({}, { foo: [Boolean] }),
+            schematize({}, { foo: [Boolean] }),
             { foo: [] }
         );
         assert.deepStrictEqual(
-            ensure({}, { foo: { bar: [false] } }),
+            schematize({}, { foo: { bar: [false] } }),
             { foo: { bar: [] } }
         );
     });

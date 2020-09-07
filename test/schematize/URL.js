@@ -1,21 +1,21 @@
 /* global describe, it */
 const assert = require("assert");
-const { ensure } = require("../..");
+const { schematize } = require("../..");
 
 const url = "https://github.com/hyurl/utils";
 const urlObj = new URL(url);
 
-describe("ensure: URL", () => {
+describe("schematize: URL", () => {
     it("should return as-is for existing properties of URL type", () => {
         assert.deepStrictEqual(
-            ensure({ foo: urlObj }, { foo: URL }),
+            schematize({ foo: urlObj }, { foo: URL }),
             { foo: urlObj }
         );
     });
 
     it("should return as-is for existing sub-properties of URL type", () => {
         assert.deepStrictEqual(
-            ensure(
+            schematize(
                 { foo: { bar: urlObj } },
                 { foo: { bar: URL } }
             ),
@@ -25,40 +25,40 @@ describe("ensure: URL", () => {
 
     it("should cast existing properties of non-url type to URL", () => {
         assert.deepStrictEqual(
-            ensure({ foo: url }, { foo: URL }),
+            schematize({ foo: url }, { foo: URL }),
             { foo: urlObj }
         );
     });
 
     it("should cast existing values in sub-node to URLs", () => {
         assert.deepStrictEqual(
-            ensure({ foo: { bar: url } }, { foo: { bar: URL } }),
+            schematize({ foo: { bar: url } }, { foo: { bar: URL } }),
             { foo: { bar: urlObj } }
         );
     });
 
     it("should cast all elements in an array to URLs by array schema", () => {
         assert.deepStrictEqual(
-            ensure({ foo: [url] }, { foo: [URL] }),
+            schematize({ foo: [url] }, { foo: [URL] }),
             { foo: [urlObj] }
         );
     });
 
     it("should use `null` as the default value for missing properties", () => {
-        assert.deepStrictEqual(ensure({}, { foo: URL }), { foo: null });
+        assert.deepStrictEqual(schematize({}, { foo: URL }), { foo: null });
     });
 
     it("should use the given url object as the default value for missing properties", () => {
-        assert.deepStrictEqual(ensure({}, { foo: urlObj }), { foo: urlObj });
+        assert.deepStrictEqual(schematize({}, { foo: urlObj }), { foo: urlObj });
     });
 
     it("should create default values in sub-nodes", () => {
         assert.deepStrictEqual(
-            ensure({ foo: {} }, { foo: { bar: URL } }),
+            schematize({ foo: {} }, { foo: { bar: URL } }),
             { foo: { bar: null } }
         );
         assert.deepStrictEqual(
-            ensure({}, { foo: { bar: urlObj } }),
+            schematize({}, { foo: { bar: urlObj } }),
             { foo: { bar: urlObj } }
         );
     });

@@ -1,4 +1,4 @@
-# Schemaly
+# Schematize
 
 **Utilities to ensure object structures and perform pattern matching.**
 
@@ -8,22 +8,22 @@ however, the server provide it as a numeric `string`, or even worse it
 doesn't exist at all, or is set `null`, which would cause the client to crash
 if the exception is not handled well.
 
-That's why **schemaly** comes in stage. It ensures the input or output data must
-be of a certain structure based on the schema, which provides the ability to
-auto-cast compatible values and provides default values when they're missing.
+That's why **schematize** comes in stage. It ensures the input or output data
+must be of a certain structure based on the schema, which provides the ability
+to auto-cast compatible values and provides default values when they're missing.
 
 ## Install
 
 ```sh
-npm i @hyurl/schemaly
+npm i @hyurl/schematize
 ```
 
 ## Example
 
-### ensure
+### schematize
 
 ```ts
-import { ensure, Optional } from "@hyurl/schemaly";
+import schematize, { Optional } from "@hyurl/schematize";
 import * as express from "express";
 
 
@@ -47,7 +47,7 @@ let AuthorSchema = {
 
     if (res.ok) {
         // 'author' will be well-typed in TypeScript.
-        let author = ensure(await res.json(), authorSchema);
+        let author = schematize(await res.json(), authorSchema);
 
         console.log(
             `${author.username} (${author.uid}) ${author.isPopular ? "is" : "isn't"} a popular writer.`);
@@ -68,9 +68,9 @@ let AuthorSchema = {
 
         if (author) {
             // At this point, we don't know what fields does 'author' has,
-            // but that's no problem, `ensure()` will make sure that all the
+            // but that's no problem, `schematize()` will make sure that all the
             // fields we expected is presented in the outgoing response.
-            res.send(ensure(author, AuthorSchema));
+            res.send(schematize(author, AuthorSchema));
         }
     });
 
@@ -81,7 +81,7 @@ let AuthorSchema = {
 ### match
 
 ```ts
-import { match, Optional } from "@hyurl/schemaly";
+import { match, Optional } from "@hyurl/schematize";
 
 let userSchema = { uid: Number, username: String, birthday: Optional(String) };
 let res = await fetch(someLink);
@@ -107,26 +107,34 @@ if (res.ok) {
 
 ## API
 
-### ensure
+### schematize
 
 ```ts
 /**
- * Makes sure the input object is restraint with the types defined in the schema
+ * Ensures the input object is restraint with the types defined in the schema
  * and automatically fills any property that is missing.
  * @param omitUntyped If set, those properties that are not specified in schema
  *  will be removed.
  */
-function ensure<T>(obj: any, schema: T, omitUntyped?: boolean): OptionalStructured<T>;
+function schematize<T>(
+    obj: any,
+    schema: T,
+    omitUntyped?: boolean
+): OptionalStructured<T>;
 
 /**
- * Makes sure the input array of objects is restraint with the types defined in
+ * Ensures the input array of objects is restraint with the types defined in
  * the schema and automatically fills any property that is missing.
  * @param schema For array of objects, the schema must be defined as an array
  *  with one element which sets the types for all objects in the input array.
  * @param omitUntyped If set, those properties that are not specified in the
  *  schema will be removed.
  */
-function ensure<T>(arr: any[], schema: [T], omitUntyped?: boolean): OptionalStructured<T>[];
+function schematize<T>(
+    arr: any[],
+    schema: [T],
+    omitUntyped?: boolean
+): OptionalStructured<T>[];
 ```
 
 ### match
@@ -160,12 +168,12 @@ export default function match<T>(
 For more details about types, please check the [type definition](./src/types.ts).
 
 
-## More On Ensure
+## More On Schematize
 
 ### Default Values
 
-For the `ensure()` function, by default, if you provide a type constructor in
-the schema, when the specified property is missing, it will create a default
+For the `schematize()` function, by default, if you provide a type constructor
+in the schema, when the specified property is missing, it will create a default
 value to make sure the property always available (expect use
 `Optional` wrapper). The default values of each types are:
 
@@ -192,8 +200,8 @@ but it will be used for full-equality comparison.)*
 
 ### Auto-cast Types
 
-When a property in the input data of the `ensure()` function isn't of the type
-that defined in the schema, however, it is compatible to the type, or can
+When a property in the input data of the `schematize()` function isn't of the
+type that defined in the schema, however, it is compatible to the type, or can
 generate a similar representation, the value will be automatically casted into
 an instance of the defined type.
 
@@ -201,7 +209,9 @@ For example:
 
 ```ts
 let schema = { url: URL }; // 'url' is defined as a URL
-let data = ensure({ url: "https://example.com" }, schema); // but provided a string
+let data = schematize({
+    url: "https://example.com" // but provided a string
+}, schema);
 
 assert(data.url instanceof URL); // 'data.url' will be auto-casted to URL
 ```

@@ -2,7 +2,7 @@
 const assert = require("assert");
 const { match } = require("../..");
 
-describe("match: typedArray", () => {
+describe("match: TypedArray", () => {
     it("should pass for TypedArray", () => {
         assert(match(
             { foo: Uint8Array.from([1, 2, 3]) },

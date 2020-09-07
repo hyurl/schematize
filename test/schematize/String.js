@@ -1,13 +1,13 @@
 /* global describe, it */
 const assert = require("assert");
-const { ensure } = require("../..");
+const { schematize } = require("../..");
 
 const date = new Date();
 
-describe("ensure: String", () => {
+describe("schematize: String", () => {
     it("should return as-is for existing properties of string type", () => {
         assert.deepStrictEqual(
-            ensure(
+            schematize(
                 { foo: "Hello", bar: "World" },
                 { foo: String, bar: String }
             ),
@@ -17,7 +17,7 @@ describe("ensure: String", () => {
 
     it("should return as-is for existing sub-properties of string type", () => {
         assert.deepStrictEqual(
-            ensure(
+            schematize(
                 { foo: { bar: "Hello World" } },
                 { foo: { bar: String } }
             ),
@@ -27,7 +27,7 @@ describe("ensure: String", () => {
 
     it("should cast existing properties of non-string type to strings", () => {
         assert.deepStrictEqual(
-            ensure(
+            schematize(
                 { foo: 123, bar: Symbol.for("id"), yes: true, no: false, date },
                 { foo: String, bar: String, yes: String, no: String, date: String }
             ),
@@ -43,14 +43,14 @@ describe("ensure: String", () => {
 
     it("should cast existing values in sub-node to strings", () => {
         assert.deepStrictEqual(
-            ensure({ foo: { bar: 123 } }, { foo: { bar: String } }),
+            schematize({ foo: { bar: 123 } }, { foo: { bar: String } }),
             { foo: { bar: "123" } }
         );
     });
 
     it("should cast existing properties of compound-type to JSON strings", () => {
         assert.deepStrictEqual(
-            ensure(
+            schematize(
                 { foo: { hello: "world" }, bar: [1, 2, 3] },
                 { foo: String, bar: String }
             ),
@@ -63,47 +63,47 @@ describe("ensure: String", () => {
 
     it("should cast all elements in an array to strings by array schema", () => {
         assert.deepStrictEqual(
-            ensure({ foo: [1, 2, 3] }, { foo: [String] }),
+            schematize({ foo: [1, 2, 3] }, { foo: [String] }),
             { foo: ["1", "2", "3"] }
         );
     });
 
     it("should create empty strings as default values for missing properties", () => {
         assert.deepStrictEqual(
-            ensure({}, { foo: String, bar: "" }),
+            schematize({}, { foo: String, bar: "" }),
             { foo: "", bar: "" }
         );
         assert.deepStrictEqual(
-            ensure({ foo: null }, { foo: String }),
+            schematize({ foo: null }, { foo: String }),
             { foo: "" }
         );
     });
 
     it("should use the given strings in the schema as default values", () => {
         assert.deepStrictEqual(
-            ensure({}, { foo: "Hello", bar: "World" }),
+            schematize({}, { foo: "Hello", bar: "World" }),
             { foo: "Hello", bar: "World" }
         );
     });
 
     it("should create default values in sub-nodes", () => {
         assert.deepStrictEqual(
-            ensure({ foo: {} }, { foo: { bar: String } }),
+            schematize({ foo: {} }, { foo: { bar: String } }),
             { foo: { bar: "" } }
         );
         assert.deepStrictEqual(
-            ensure({}, { foo: { bar: "" } }),
+            schematize({}, { foo: { bar: "" } }),
             { foo: { bar: "" } }
         );
     });
 
     it("should create empty arrays for array schemas", () => {
         assert.deepStrictEqual(
-            ensure({}, { foo: [String] }),
+            schematize({}, { foo: [String] }),
             { foo: [] }
         );
         assert.deepStrictEqual(
-            ensure({}, { foo: { bar: [""] } }),
+            schematize({}, { foo: { bar: [""] } }),
             { foo: { bar: [] } }
         );
     });

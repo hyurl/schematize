@@ -1,32 +1,32 @@
 /* global describe, it */
 const assert = require("assert");
-const { ensure } = require("../..");
+const { schematize } = require("../..");
 const { default: doTry } = require("dotry");
 
-describe("ensure: common", () => {
+describe("schematize: common", () => {
     it("should support top level array schemas", () => {
         assert.deepStrictEqual(
-            ensure([{ foo: "Hello, World!" }, { foo: 123 }], [{ foo: String }]),
+            schematize([{ foo: "Hello, World!" }, { foo: 123 }], [{ foo: String }]),
             [{ foo: "Hello, World!" }, { foo: "123" }]
         );
 
         assert.deepStrictEqual(
-            ensure([{ foo: "123" }, { foo: "456" }], [{ foo: Number }]),
+            schematize([{ foo: "123" }, { foo: "456" }], [{ foo: Number }]),
             [{ foo: 123 }, { foo: 456 }]
         );
 
         assert.deepStrictEqual(
-            ensure([{ foo: 1 }, { foo: 0 }], [{ foo: Boolean }]),
+            schematize([{ foo: 1 }, { foo: 0 }], [{ foo: Boolean }]),
             [{ foo: true }, { foo: false }]
         );
 
         assert.deepStrictEqual(
-            ensure([{ foo: Symbol.for("foo") }, { foo: "foo" }], [{ foo: Symbol }]),
+            schematize([{ foo: Symbol.for("foo") }, { foo: "foo" }], [{ foo: Symbol }]),
             [{ foo: Symbol.for("foo") }, { foo: Symbol.for("foo") }]
         );
 
         assert.deepStrictEqual(
-            ensure(
+            schematize(
                 [{ foo: '{"hello":"world"}' }],
                 [{ foo: Object }]
             ),
@@ -34,7 +34,7 @@ describe("ensure: common", () => {
         );
 
         assert.deepStrictEqual(
-            ensure(
+            schematize(
                 [{ foo: '["hello","world"]' }, { foo: "Hello, World" }],
                 [{ foo: Array }]
             ),
@@ -43,11 +43,11 @@ describe("ensure: common", () => {
     });
 
     it("should throw proper error when casting failed on property", () => {
-        let [err1] = doTry(() => ensure({ foo: () => { } }, { foo: String }));
-        let [err2] = doTry(() => ensure({ foo: { bar: () => { } } }, { foo: { bar: Number } }));
-        let [err3] = doTry(() => ensure({ foo: [Symbol("id")] }, { foo: [Boolean] }));
-        let [err4] = doTry(() => ensure([{ foo: () => { } }], [{ foo: Symbol }]));
-        let [err5] = doTry(() => ensure([{ foo: { bar: () => { } } }], [{ foo: { bar: Object } }]));
+        let [err1] = doTry(() => schematize({ foo: () => { } }, { foo: String }));
+        let [err2] = doTry(() => schematize({ foo: { bar: () => { } } }, { foo: { bar: Number } }));
+        let [err3] = doTry(() => schematize({ foo: [Symbol("id")] }, { foo: [Boolean] }));
+        let [err4] = doTry(() => schematize([{ foo: () => { } }], [{ foo: Symbol }]));
+        let [err5] = doTry(() => schematize([{ foo: { bar: () => { } } }], [{ foo: { bar: Object } }]));
 
         assert.strictEqual(
             String(err1),
