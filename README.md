@@ -2,13 +2,13 @@
 
 **Utilities to ensure object structures and perform pattern matching.**
 
-For many reasons, an API may not return the data as what we want them to be. For
+For many reasons, an API may not return the data to what we want them to be. For
 example, we expect a JSON response should have a `foo` property of `number` type,
-however, the server provide it as a numeric `string`, or even worse it
+however, the server provides it as a numeric `string`, or even worse it
 doesn't exist at all, or is set `null`, which would cause the client to crash
 if the exception is not handled well.
 
-That's why **schematize** comes in stage. It ensures the input or output data
+That's why **schematize** comes on stage. It ensures the input or output data
 must be of a certain structure based on the schema, which provides the ability
 to auto-cast compatible values and provides default values when they're missing.
 
@@ -67,9 +67,9 @@ let AuthorSchema = {
         let author = await db.findOne({ uid: Number(req.params.uid) });
 
         if (author) {
-            // At this point, we don't know what fields does 'author' has,
+            // At this point, we don't know what fields does the 'author' has,
             // but that's no problem, `schematize()` will make sure that all the
-            // fields we expected is presented in the outgoing response.
+            // fields we expected are presented in the outgoing response.
             res.send(schematize(author, AuthorSchema));
         }
     });
@@ -113,8 +113,8 @@ if (res.ok) {
 /**
  * Ensures the input object is restraint with the types defined in the schema
  * and automatically fills any property that is missing.
- * @param omitUntyped If set, those properties that are not specified in schema
- *  will be removed.
+ * @param omitUntyped If set, those properties that are not specified in the
+ *  schema will be removed.
  */
 function schematize<T>(
     obj: any,
@@ -174,7 +174,7 @@ For more details about types, please check the [type definition](./src/types.ts)
 
 For the `schematize()` function, by default, if you provide a type constructor
 in the schema, when the specified property is missing, it will create a default
-value to make sure the property always available (expect use
+value to make sure the property always available (expect using
 `Optional` wrapper). The default values of each types are:
 
 - `String` => `''` (empty string)
@@ -188,8 +188,8 @@ value to make sure the property always available (expect use
 - `Set` => `new Set([])` (empty set)
 - `Buffer` => `Buffer.from([])` (empty buffer)
 
-Other type constructors (include `Symbol` and user-define classes) are all set
-`null` if the relevant property is missing.
+Other type constructors (include `Symbol` and user-defined classes) are all set
+`null`, if the relevant property is missing.
 
 Other than these, you can always by providing an instance value to the schema,
 and it will be used as the default value of the property automatically.

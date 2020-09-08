@@ -29,8 +29,8 @@ export default function schematize<T>(
 /**
  * Ensures the input object is restraint with the types defined in the schema
  * and automatically fills any property that is missing.
- * @param omitUntyped If set, those properties that are not specified in schema
- *  will be removed.
+ * @param omitUntyped If set, those properties that are not specified in the
+ *  schema will be removed.
  */
 export default function schematize<T>(
     obj: any,
