@@ -1,5 +1,5 @@
 import "@hyurl/utils/types";
-import { OptionalOf, OptionalStructured } from "./types";
+import { Structured, OptionalOf } from "./types";
 import { isIterable } from "check-iterable";
 import isVoid from "@hyurl/utils/isVoid";
 import typeOf, { TypeNames } from "@hyurl/utils/typeOf";
@@ -25,7 +25,7 @@ export default function schematize<T>(
     arr: any[],
     schema: [T],
     omitUntyped?: boolean
-): OptionalStructured<T>[];
+): Structured<T>[];
 /**
  * Ensures the input object is restraint with the types defined in the schema
  * and automatically fills any property that is missing.
@@ -36,7 +36,7 @@ export default function schematize<T>(
     obj: any,
     schema: T,
     omitUntyped?: boolean
-): OptionalStructured<T>;
+): Structured<T>;
 export default function schematize<T>(obj: any, schema: T = null, omitUntyped = false) {
     return makeSure("", obj, schema, omitUntyped);
 }

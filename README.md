@@ -120,7 +120,7 @@ function schematize<T>(
     obj: any,
     schema: T,
     omitUntyped?: boolean
-): OptionalStructured<T>;
+): Structured<T>;
 
 /**
  * Ensures the input array of objects is restraint with the types defined in
@@ -134,7 +134,7 @@ function schematize<T>(
     arr: any[],
     schema: [T],
     omitUntyped?: boolean
-): OptionalStructured<T>[];
+): Structured<T>[];
 ```
 
 ### match

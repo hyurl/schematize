@@ -1,6 +1,8 @@
 import "@hyurl/utils/types";
 
-export type Structured<T> = {
+export type Structured<T> = Optional<iStructured<T>, OptionalKeys<T>>;
+
+type iStructured<T> = {
     [P in keyof T]: (
         T[P] extends typeof String ? string :
         T[P] extends typeof Number ? number :
@@ -17,18 +19,16 @@ export type Structured<T> = {
     )
 };
 
-export type OptionalKeys<T> = {
+type OptionalKeys<T> = {
     [K in keyof T]: T[K] extends OptionalOf<any> ? K : never;
 }[keyof T];
-
-export type OptionalStructured<T> = Optional<Structured<T>, OptionalKeys<T>>;
 
 type iConstructor<T> = SymbolConstructor | BigIntConstructor | Constructor<T>;
 
 export class OptionalOf<T> {
-    constructor(readonly base: iConstructor<T>) { }
+    constructor(readonly base: iConstructor<T> | T) { }
 }
 
-export function Optional<T>(base: iConstructor<T>): OptionalOf<T> {
+export function Optional<T>(base: iConstructor<T> | T) {
     return new OptionalOf(base);
 }
