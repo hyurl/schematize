@@ -1,6 +1,6 @@
 {
   "name": "@hyurl/schematize",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Utilities to ensure object structures and perform pattern matching.",
   "main": "dist/index.js",
   "types": "src/index.ts",
@@ -24,11 +24,11 @@
   },
   "homepage": "https://github.com/hyurl/schematize#readme",
   "dependencies": {
-    "@hyurl/utils": "^0.2.5"
+    "@hyurl/utils": "^0.2.8"
   },
   "devDependencies": {
-    "@types/node": "^13.11.1",
-    "dotry": "^1.0.3",
+    "@types/node": "^13.13.21",
+    "dotry": "^1.2.1",
     "mocha": "^7.2.0"
   }
 }
